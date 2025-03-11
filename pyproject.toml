@@ -1,0 +1,21 @@
+[project]
+name = "arrchive"
+version = "1.0.0"
+description = "Backup *Arr stack databases to Google Drive."
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "discord-webhook>=1.4.1",
+    "environs>=14.1.1",
+    "loguru>=0.7.3",
+    "loguru-discord>=1.4.0",
+    "pydrive2>=1.21.3",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.9.10",
+]
+
+[tool.ruff.lint]
+select = ["I"]
