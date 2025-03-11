@@ -12,7 +12,7 @@ Arrchive mirrors [Radarr](https://github.com/Radarr/Radarr), [Sonarr](https://gi
 
 Although not required, a [Discord Webhook](https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks) is recommended for notifications.
 
-Regardless of whether you choose to run the Docker container or standalone script, Arrchive is intended to be run at an interval using a task scheduler, such as [cron](https://crontab.guru/).
+Arrchive is intended to be run at an interval using a task scheduler, such as [cron](https://crontab.guru/).
 
 **Environment Variables:**
 
@@ -24,10 +24,10 @@ Regardless of whether you choose to run the Docker container or standalone scrip
 -   `PROWLARR_BACKUP_PATH`: Path to a directory containing database backup `.zip` files for [Prowlarr](https://github.com/Prowlarr/Prowlarr).
 -   `RADARR_BACKUP_PATH`: Path to a directory containing database backup `.zip` files for [Radarr](https://github.com/Radarr/Radarr).
 -   `SONARR_BACKUP_PATH`: Path to a directory containing database backup `.zip` files for [Sonarr](https://github.com/Sonarr/Sonarr).
--   `GOOGLE_SERVICE_EMAIL`: Email Address for a [Google Service Account](https://console.cloud.google.com/projectselector/iam-admin/serviceaccounts), derrived from the Private Key JSON file.
--   `GOOGLE_SERVICE_CLIENT_ID`: Client ID for a [Google Service Account](https://console.cloud.google.com/projectselector/iam-admin/serviceaccounts), derrived from the Private Key JSON file.
--   `GOOGLE_SERVICE_PRIVATE_KEY_ID`: Private Key ID for a [Google Service Account](https://console.cloud.google.com/projectselector/iam-admin/serviceaccounts), derrived from the Private Key JSON file.
--   `GOOGLE_SERVICE_PRIVATE_KEY`: Private Key for a [Google Service Account](https://console.cloud.google.com/projectselector/iam-admin/serviceaccounts), derrived from the Private Key JSON file.
+-   `GOOGLE_SERVICE_EMAIL`: Email Address for a [Google Service Account](https://console.cloud.google.com/projectselector/iam-admin/serviceaccounts).
+-   `GOOGLE_SERVICE_CLIENT_ID`: Client ID for a [Google Service Account](https://console.cloud.google.com/projectselector/iam-admin/serviceaccounts).
+-   `GOOGLE_SERVICE_PRIVATE_KEY_ID`: Private Key ID for a [Google Service Account](https://console.cloud.google.com/projectselector/iam-admin/serviceaccounts).
+-   `GOOGLE_SERVICE_PRIVATE_KEY`: Private Key for a [Google Service Account](https://console.cloud.google.com/projectselector/iam-admin/serviceaccounts).
 -   `GOOGLE_DRIVE_FOLDER_ID`: Identifier for a Google Drive folder derrived from its URL.
 -   `BACKUP_RETAIN_LIMIT`: Number of backup files to retain on a per-application basis.
 
