@@ -59,24 +59,32 @@ def start() -> None:
     drive_backups: dict[str, list[Backup]] = drive_collect(drive)
     local_backups: dict[str, list[Backup]] = {}
 
-    if local_path := env.path(f"{Source.Bazarr.upper()}_BACKUP_PATH"):
+    if environ.get(f"{Source.Bazarr.upper()}_BACKUP_PATH"):
         local_backups[Source.Bazarr] = local_collect(
-            Source.Bazarr, local_path, drive_backups
+            Source.Bazarr,
+            env.path(f"{Source.Bazarr.upper()}_BACKUP_PATH"),
+            drive_backups,
         )
 
-    if local_path := env.path(f"{Source.Prowlarr.upper()}_BACKUP_PATH"):
+    if environ.get(f"{Source.Prowlarr.upper()}_BACKUP_PATH"):
         local_backups[Source.Prowlarr] = local_collect(
-            Source.Prowlarr, local_path, drive_backups
+            Source.Prowlarr,
+            env.path(f"{Source.Prowlarr.upper()}_BACKUP_PATH"),
+            drive_backups,
         )
 
-    if local_path := env.path(f"{Source.Radarr.upper()}_BACKUP_PATH"):
+    if environ.get(f"{Source.Radarr.upper()}_BACKUP_PATH"):
         local_backups[Source.Radarr] = local_collect(
-            Source.Radarr, local_path, drive_backups
+            Source.Radarr,
+            env.path(f"{Source.Radarr.upper()}_BACKUP_PATH"),
+            drive_backups,
         )
 
-    if local_path := env.path(f"{Source.Sonarr.upper()}_BACKUP_PATH"):
+    if environ.get(f"{Source.Sonarr.upper()}_BACKUP_PATH"):
         local_backups[Source.Sonarr] = local_collect(
-            Source.Sonarr, local_path, drive_backups
+            Source.Sonarr,
+            env.path(f"{Source.Sonarr.upper()}_BACKUP_PATH"),
+            drive_backups,
         )
 
     drive_uploaded: int = 0
