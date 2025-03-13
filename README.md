@@ -68,16 +68,21 @@ services:
       LOG_DISCORD_WEBHOOK_URL: https://discord.com/api/webhooks/YYYYYYYY/YYYYYYYY
       LOG_DISCORD_WEBHOOK_LEVEL: WARNING
       DISCORD_WEBHOOK_URL: https://discord.com/api/webhooks/XXXXXXXX/XXXXXXXX
-      BAZARR_BACKUP_PATH: /path/to/bazarr/backups
-      PROWLARR_BACKUP_PATH: /path/to/prowlarr/backups
-      RADARR_BACKUP_PATH: /path/to/radarr/backups
-      SONARR_BACKUP_PATH: /path/to/sonarr/backups
+      BAZARR_BACKUP_PATH: /container/path/to/bazarr/backups
+      PROWLARR_BACKUP_PATH: /container/path/to/prowlarr/backups
+      RADARR_BACKUP_PATH: /container/path/to/radarr/backups
+      SONARR_BACKUP_PATH: /container/path/to/sonarr/backups
       GOOGLE_SERVICE_EMAIL: email@gserviceaccount.com
       GOOGLE_SERVICE_CLIENT_ID: 000000000000000000000
       GOOGLE_SERVICE_PRIVATE_KEY_ID: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
       GOOGLE_SERVICE_PRIVATE_KEY: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
       GOOGLE_DRIVE_FOLDER_ID: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
       BACKUP_RETAIN_LIMIT: 3
+    volumes:
+      - /local/path/to/bazarr/backups:/container/path/to/bazarr/backups:ro
+      - /local/path/to/prowlarr/backups:/container/path/to/prowlarr/backups:ro
+      - /local/path/to/radarr/backups:/container/path/to/radarr/backups:ro
+      - /local/path/to/sonarr/backups:/container/path/to/sonarr/backups:ro
 ```
 
 ### Standalone
