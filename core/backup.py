@@ -135,11 +135,11 @@ class Backup:
 
             match source:
                 case Source.Profilarr:
-                    # Example file_name: backup_2025_03_22_152542.zip
-                    timestamp = datetime.strptime(file_name[7:-4], "%Y_%m_%d_%H%M%S")
+                    if not file_name.startswith(Source.Profilarr.lower()):
+                        file_name = f"{Source.Profilarr.lower()}_{file_name}"
 
-                    # Profilarr doesn't include its name in the backup file_name
-                    file_name = f"{Source.Profilarr.lower()}_{file_name}"
+                    # Example file_name: profilarr_backup_2025_03_22_152542.zip
+                    timestamp = datetime.strptime(file_name[17:-4], "%Y_%m_%d_%H%M%S")
                 case _:
                     # Example file_name: radarr_backup_v5.20.2.9777_2025.03.24_06.06.08.zip
                     file_name_pieces: list[str] = file_name.split("_", 3)
