@@ -3,6 +3,7 @@ from datetime import datetime
 from os import environ
 from pathlib import Path
 from sys import stdout
+from urllib.parse import ParseResult
 
 from discord_webhook import (  # pyright: ignore [reportMissingTypeStubs]
     DiscordEmbed,
@@ -39,7 +40,9 @@ def start() -> None:
 
         logger.info(f"Set console logging level to {level}")
 
-    if url := env.url("LOG_DISCORD_WEBHOOK_URL"):
+    if environ.get("LOG_DISCORD_WEBHOOK_URL"):
+        url: ParseResult = env.url("LOG_DISCORD_WEBHOOK_URL")
+
         logger.add(
             DiscordSink(url.geturl()),
             level=env.str("LOG_DISCORD_WEBHOOK_LEVEL"),
@@ -70,6 +73,13 @@ def start() -> None:
         local_backups[Source.Prowlarr] = local_collect(
             Source.Prowlarr,
             env.path(f"{Source.Prowlarr.upper()}_BACKUP_PATH"),
+            drive_backups,
+        )
+
+    if environ.get(f"{Source.Profilarr.upper()}_BACKUP_PATH"):
+        local_backups[Source.Profilarr] = local_collect(
+            Source.Profilarr,
+            env.path(f"{Source.Profilarr.upper()}_BACKUP_PATH"),
             drive_backups,
         )
 
@@ -325,7 +335,7 @@ def drive_upload(
             try:
                 file: GoogleDriveFile = drive.CreateFile(  # pyright: ignore [reportUnknownMemberType]
                     {
-                        "title": local_backup.local_path.name,
+                        "title": local_backup.file_name,
                         "parents": [{"id": env.str("GOOGLE_DRIVE_FOLDER_ID")}],
                     }
                 )
@@ -422,9 +432,11 @@ def notify(backup: Backup, action: Action) -> None:
     embed.set_title(f"Backup {action}")
     embed.set_thumbnail("https://i.imgur.com/bOn2yC4.png")
     embed.add_embed_field("Timestamp", f"<t:{int(backup.timestamp.timestamp())}:F>")
-    embed.add_embed_field("Version", backup.source_version)
     embed.set_footer("Arrchive", icon_url="https://i.imgur.com/pynYfuR.png")  # pyright: ignore [reportUnknownMemberType]
     embed.set_timestamp(datetime.now().timestamp())
+
+    if backup.source_version:
+        embed.add_embed_field("Version", backup.source_version)
 
     if action == Action.Uploaded:
         embed.set_url(backup.drive_url)

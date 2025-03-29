@@ -10,6 +10,7 @@ class Source(str, Enum):
     """An Enum containing members representing backup sources."""
 
     Bazarr = "Bazarr"
+    Profilarr = "Profilarr"
     Prowlarr = "Prowlarr"
     Radarr = "Radarr"
     Sonarr = "Sonarr"
@@ -25,6 +26,8 @@ class Source(str, Enum):
         match self:
             case Source.Bazarr:
                 return "BE4BDB"
+            case Source.Profilarr:
+                return "C39766"
             case Source.Prowlarr:
                 return "E66001"
             case Source.Radarr:
@@ -42,6 +45,8 @@ class Source(str, Enum):
         match self:
             case Source.Bazarr:
                 return "https://raw.githubusercontent.com/morpheus65535/bazarr/refs/heads/master/frontend/public/images/logo128.png"
+            case Source.Profilarr:
+                return "https://raw.githubusercontent.com/Dictionarry-Hub/website/refs/heads/v2/public/logo.png"
             case Source.Prowlarr:
                 return "https://raw.githubusercontent.com/Prowlarr/Prowlarr/refs/heads/develop/Logo/1024.png"
             case Source.Radarr:
@@ -72,7 +77,7 @@ class Backup:
     def __init__(
         self: Self,
         source: Source,
-        source_version: str,
+        source_version: str | None,
         timestamp: datetime,
         file_name: str,
         local_path: Path | None = None,
@@ -82,7 +87,7 @@ class Backup:
         """Initialize a Backup object."""
 
         self.source: Source = source
-        self.source_version: str = source_version
+        self.source_version: str | None = source_version
         self.timestamp: datetime = timestamp
         self.timestamp_formatted: str = timestamp.strftime("%A, %B %#d, %Y %I:%M %p")
         self.file_name: str = file_name
@@ -125,12 +130,24 @@ class Backup:
             return
 
         try:
-            file_name_pieces: list[str] = file_name.split("_", 3)
+            timestamp: datetime | None = None
+            source_version: str | None = None
 
-            timestamp: datetime = datetime.strptime(
-                file_name_pieces[3].rsplit(".", 1)[0], "%Y.%m.%d_%H.%M.%S"
-            )
-            source_version: str = file_name_pieces[2]
+            match source:
+                case Source.Profilarr:
+                    # Example file_name: backup_2025_03_22_152542.zip
+                    timestamp = datetime.strptime(file_name[7:-4], "%Y_%m_%d_%H%M%S")
+
+                    # Profilarr doesn't include its name in the backup file_name
+                    file_name = f"{Source.Profilarr.lower()}_{file_name}"
+                case _:
+                    # Example file_name: radarr_backup_v5.20.2.9777_2025.03.24_06.06.08.zip
+                    file_name_pieces: list[str] = file_name.split("_", 3)
+
+                    source_version = file_name_pieces[2]
+                    timestamp = datetime.strptime(
+                        file_name_pieces[3].rsplit(".", 1)[0], "%Y.%m.%d_%H.%M.%S"
+                    )
 
             backup = cls(
                 source,

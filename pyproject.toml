@@ -1,7 +1,7 @@
 [project]
 name = "arrchive"
-version = "1.0.0"
-description = "Backup *Arr stack databases to Google Drive."
+version = "1.1.0"
+description = "Upload mirrors of your *Arr database backups to Google Drive."
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
@@ -14,7 +14,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "ruff>=0.9.10",
+    "ruff>=0.11.2",
 ]
 
 [tool.ruff.lint]

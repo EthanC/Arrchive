@@ -1,35 +1,89 @@
 # Arrchive
 
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/EthanC/Arrchive/ci.yaml?branch=main) ![Docker Pulls](https://img.shields.io/docker/pulls/ethanchrisp/Arrchive?label=Docker%20Pulls) ![Docker Image Size (tag)](https://img.shields.io/docker/image-size/ethanchrisp/arrchive/latest?label=Docker%20Image%20Size)
+![Python](https://img.shields.io/badge/Python-3-blue?logo=python&logoColor=white)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ethanc/arrchive/ci.yaml)
+![Docker Pulls](https://img.shields.io/docker/pulls/ethanchrisp/arrchive)
+![Docker Image Size (tag)](https://img.shields.io/docker/image-size/ethanchrisp/arrchive)
 
-Arrchive mirrors [Radarr](https://github.com/Radarr/Radarr), [Sonarr](https://github.com/Sonarr/Sonarr), [Prowlarr](https://github.com/Prowlarr/Prowlarr), and [Bazarr](https://github.com/morpheus65535/bazarr) database backups to Google Drive.
+Arrchive uploads mirrors of your \*Arr app database backups to [Google Drive](https://drive.google.com/).
+
+It's lightweight, runs in Docker, features a configurable retention limit, and optionally sends notifications via Discord.
+
+**Supported \*Arr Apps:**
+
+-   [Radarr](https://github.com/Radarr/Radarr)
+-   [Sonarr](https://github.com/Sonarr/Sonarr)
+-   [Prowlarr](https://github.com/Prowlarr/Prowlarr)
+-   [Bazarr](https://github.com/morpheus65535/bazarr)
+-   [Profilarr](https://github.com/Dictionarry-Hub/Profilarr)
 
 <p align="center">
-    <img src="https://i.imgur.com/jmLZ8gY.png" draggable="false">
+    <img src="https://i.imgur.com/jmLZ8gY.png" alt="An example of an Arrchive notification in Discord." draggable="false">
 </p>
 
-## Setup
+## Features
 
-Although not required, a [Discord Webhook](https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks) is recommended for notifications.
+-   Uploads compressed `.zip` backups from your \*Arr apps to Google Drive.
+-   Automatically removes old backup mirrors based on your retention limit.
+-   Optional Discord integration for logs and backup notifications.
+-   Easy to deploy via Docker or run standalone with Python.
 
-Arrchive is intended to be run at an interval using a task scheduler, such as [cron](https://crontab.guru/).
+## Getting Started
 
-**Environment Variables:**
+### Quick Start: Docker Compose
 
--   `LOG_LEVEL`: [Loguru](https://loguru.readthedocs.io/en/stable/api/logger.html) severity level to write to the console.
--   `LOG_DISCORD_WEBHOOK_URL`: [Discord Webhook](https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks) URL to receive log events.
--   `LOG_DISCORD_WEBHOOK_LEVEL`: Minimum [Loguru](https://loguru.readthedocs.io/en/stable/api/logger.html) severity level to forward to Discord.
--   `DISCORD_WEBHOOK_URL`: [Discord Webhook](https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks) URL to receive backup action notifications.
--   `BAZARR_BACKUP_PATH`: Path to a directory containing database backup `.zip` files for [Bazarr](https://github.com/morpheus65535/bazarr).
--   `PROWLARR_BACKUP_PATH`: Path to a directory containing database backup `.zip` files for [Prowlarr](https://github.com/Prowlarr/Prowlarr).
--   `RADARR_BACKUP_PATH`: Path to a directory containing database backup `.zip` files for [Radarr](https://github.com/Radarr/Radarr).
--   `SONARR_BACKUP_PATH`: Path to a directory containing database backup `.zip` files for [Sonarr](https://github.com/Sonarr/Sonarr).
--   `GOOGLE_SERVICE_EMAIL`: Email Address for a [Google Service Account](https://console.cloud.google.com/projectselector/iam-admin/serviceaccounts).
--   `GOOGLE_SERVICE_CLIENT_ID`: Client ID for a [Google Service Account](https://console.cloud.google.com/projectselector/iam-admin/serviceaccounts).
--   `GOOGLE_SERVICE_PRIVATE_KEY_ID`: Private Key ID for a [Google Service Account](https://console.cloud.google.com/projectselector/iam-admin/serviceaccounts).
--   `GOOGLE_SERVICE_PRIVATE_KEY`: Private Key for a [Google Service Account](https://console.cloud.google.com/projectselector/iam-admin/serviceaccounts).
--   `GOOGLE_DRIVE_FOLDER_ID`: Identifier for a Google Drive folder derrived from its URL.
--   `BACKUP_RETAIN_LIMIT`: Number of backup files to retain on a per-application basis.
+> [!NOTE]
+> Arrchive is designed to run on a schedule to periodically mirror backups. `cron` is recommended.
+
+Here's an example `compose.yaml` to get started. Run it with `docker compose up`.
+
+```yaml
+services:
+  arrchive:
+    container_name: arrchive
+    image: ethanchrisp/arrchive:latest
+    environment:
+      LOG_LEVEL: INFO
+      LOG_DISCORD_WEBHOOK_URL: https://discord.com/api/webhooks/YYYYYYYY/YYYYYYYY
+      LOG_DISCORD_WEBHOOK_LEVEL: WARNING
+      DISCORD_WEBHOOK_URL: https://discord.com/api/webhooks/XXXXXXXX/XXXXXXXX
+      BAZARR_BACKUP_PATH: /container/path/to/bazarr/backups
+      PROFILARR_BACKUP_PATH: /container/path/to/profilarr/backups
+      PROWLARR_BACKUP_PATH: /container/path/to/prowlarr/backups
+      RADARR_BACKUP_PATH: /container/path/to/radarr/backups
+      SONARR_BACKUP_PATH: /container/path/to/sonarr/backups
+      GOOGLE_SERVICE_EMAIL: email@gserviceaccount.com
+      GOOGLE_SERVICE_CLIENT_ID: 000000000000000000000
+      GOOGLE_SERVICE_PRIVATE_KEY_ID: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+      GOOGLE_SERVICE_PRIVATE_KEY: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+      GOOGLE_DRIVE_FOLDER_ID: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+      BACKUP_RETAIN_LIMIT: 3
+    volumes:
+      - /local/path/to/bazarr/backups:/container/path/to/bazarr/backups:ro
+      - /local/path/to/profilarr/backups:/container/path/to/profilarr/backups:ro
+      - /local/path/to/prowlarr/backups:/container/path/to/prowlarr/backups:ro
+      - /local/path/to/radarr/backups:/container/path/to/radarr/backups:ro
+      - /local/path/to/sonarr/backups:/container/path/to/sonarr/backups:ro
+```
+
+### Standalone: Python
+
+> [!NOTE]
+> Python 3.13 or later required.
+
+1. Install dependencies.
+
+    ```bash
+    uv sync
+    ```
+
+2. Rename `.env.example` to `.env` and configure your environment.
+
+3. Run Arrchive
+
+    ```bash
+    uv run arrchive.py
+    ```
 
 ### Google Drive (Required)
 
@@ -54,45 +108,26 @@ Arrchive is intended to be run at an interval using a task scheduler, such as [c
     - Example: `https://drive.google.com/drive/folders/ARRCHIVE_FOLDER_ID`
     - Set the `GOOGLE_DRIVE_FOLDER_ID` environment variable to this value.
 
-### Docker (Recommended)
+### Environment Variables
 
-Modify the following `compose.yaml` example file, then run `docker compose up`.
-
-```yaml
-services:
-  arrchive:
-    container_name: arrchive
-    image: ethanchrisp/arrchive:latest
-    environment:
-      LOG_LEVEL: INFO
-      LOG_DISCORD_WEBHOOK_URL: https://discord.com/api/webhooks/YYYYYYYY/YYYYYYYY
-      LOG_DISCORD_WEBHOOK_LEVEL: WARNING
-      DISCORD_WEBHOOK_URL: https://discord.com/api/webhooks/XXXXXXXX/XXXXXXXX
-      BAZARR_BACKUP_PATH: /container/path/to/bazarr/backups
-      PROWLARR_BACKUP_PATH: /container/path/to/prowlarr/backups
-      RADARR_BACKUP_PATH: /container/path/to/radarr/backups
-      SONARR_BACKUP_PATH: /container/path/to/sonarr/backups
-      GOOGLE_SERVICE_EMAIL: email@gserviceaccount.com
-      GOOGLE_SERVICE_CLIENT_ID: 000000000000000000000
-      GOOGLE_SERVICE_PRIVATE_KEY_ID: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-      GOOGLE_SERVICE_PRIVATE_KEY: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-      GOOGLE_DRIVE_FOLDER_ID: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-      BACKUP_RETAIN_LIMIT: 3
-    volumes:
-      - /local/path/to/bazarr/backups:/container/path/to/bazarr/backups:ro
-      - /local/path/to/prowlarr/backups:/container/path/to/prowlarr/backups:ro
-      - /local/path/to/radarr/backups:/container/path/to/radarr/backups:ro
-      - /local/path/to/sonarr/backups:/container/path/to/sonarr/backups:ro
-```
-
-### Standalone
-
-Arrchive is built for [Python 3.13](https://www.python.org/) or greater, compatability with prior versions is not guaranteed.
-
-1. Install required dependencies using [uv](https://github.com/astral-sh/uv): `uv sync`
-2. Rename `.env.example` to `.env`, then provide the environment variables.
-3. Start Arrchive: `uv run arrchive.py`
+| Variable                        | Description                                  | Required? |
+| ------------------------------- | -------------------------------------------- | --------- |
+| `LOG_LEVEL`                     | Loguru console log level.                    | No        |
+| `DISCORD_WEBHOOK_URL`           | Notifications for backup success/failure.    | No        |
+| `LOG_DISCORD_WEBHOOK_URL`       | For sending log events to Discord.           | No        |
+| `LOG_DISCORD_WEBHOOK_LEVEL`     | Minimum log level for Discord logs.          | No        |
+| `BAZARR_BACKUP_PATH`            | Local path to Bazarr backup `.zip` files.    | No        |
+| `PROFILARR_BACKUP_PATH`         | Local path to Profilarr backup `.zip` files. | No        |
+| `PROWLARR_BACKUP_PATH`          | Local path to Prowlarr backup `.zip` files.  | No        |
+| `RADARR_BACKUP_PATH`            | Local path to Radarr backup `.zip` files.    | No        |
+| `SONARR_BACKUP_PATH`            | Local path to Sonarr backup `.zip` files.    | No        |
+| `GOOGLE_SERVICE_EMAIL`          | Google Service Account Email Address.        | Yes       |
+| `GOOGLE_SERVICE_CLIENT_ID`      | Google Service Account Client ID.            | Yes       |
+| `GOOGLE_SERVICE_PRIVATE_KEY_ID` | Google Service Account Private Key ID.       | Yes       |
+| `GOOGLE_SERVICE_PRIVATE_KEY`    | Google Service Account Private key           | Yes       |
+| `GOOGLE_DRIVE_FOLDER_ID`        | Folder ID from Google Drive URL.             | Yes       |
+| `BACKUP_RETAIN_LIMIT`           | Maximum number of backups to keep per app.   | No        |
 
 ## Thanks
 
--   Arrchive uses a [Pirate icon](https://thenounproject.com/icon/pirate-3201839/) created by [Adrien Coquet](https://thenounproject.com/creator/coquet_adrien/) via [Noun Project](https://thenounproject.com/).
+-   [Pirate icon](https://thenounproject.com/icon/pirate-3201839/) courtesy of [Adrien Coquet](https://thenounproject.com/creator/coquet_adrien/) via [Noun Project](https://thenounproject.com/icon/pirate-3201839/).
